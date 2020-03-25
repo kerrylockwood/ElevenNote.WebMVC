@@ -49,6 +49,7 @@ namespace ElevenNote.Services
                                 {
                                     NoteId = e.NoteId,
                                     Title = e.Title,
+                                    IsStarred=e.IsStarred,
                                     CreatedUtc = e.CreatedUtc
                                 }
                         );
@@ -71,6 +72,7 @@ namespace ElevenNote.Services
                         NoteId = entity.NoteId,
                         Title = entity.Title,
                         Content = entity.Content,
+                        IsStarred = entity.IsStarred,
                         CreatedUtc = entity.CreatedUtc,
                         ModifiedUtc = entity.ModifiedUtc
                     };
@@ -89,6 +91,22 @@ namespace ElevenNote.Services
                 entity.Title = model.Title;
                 entity.Content = model.Content;
                 entity.ModifiedUtc = DateTimeOffset.UtcNow;
+                entity.IsStarred = model.IsStarred;
+
+                return ctx.SaveChanges() == 1;
+            }
+        }
+
+        public bool DeleteNote(int noteId)
+        {
+            using (var ctx = new ApplicationDbContext())
+            {
+                var entity =
+                    ctx
+                        .Notes
+                        .Single(e => e.NoteId == noteId && e.OwnerId == _userId);
+
+                ctx.Notes.Remove(entity);
 
                 return ctx.SaveChanges() == 1;
             }
